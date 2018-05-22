@@ -22,5 +22,11 @@ namespace DataAccess
             : base(options){}
 
         public DbSet<User> Users { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            var connectionString = @"Data Source=DESKTOP-BVKHG2F;Initial Catalog=ScrumManager;Integrated Security=True";
+            builder.UseSqlServer(connectionString);
+        }
     }
 }

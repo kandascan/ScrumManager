@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessLogic;
+using DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using WebDomain.Models;
 
@@ -10,8 +12,15 @@ namespace WebDomain.Controllers
 {
     public class HomeController : Controller
     {
+        private UnitOfWork uow = null;
+
+        public HomeController()
+        {
+            uow = new UnitOfWork();
+        }
         public IActionResult Index()
         {
+            var test = uow.Repository<User>().GetDetails(x => x.Id == 1);
             return View();
         }
 

@@ -25,9 +25,8 @@ namespace WebDomain
         {
             services.AddMvc();
             var connectionString = @"Data Source=DESKTOP-BVKHG2F;Initial Catalog=ScrumManager;Integrated Security=True";
-           // var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<ScrumManagerDbContext>(options => options.UseSqlServer(connectionString));
-
+            services.AddScoped(p => new ScrumManagerDbContext(p.GetService<DbContextOptions<ScrumManagerDbContext>>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
