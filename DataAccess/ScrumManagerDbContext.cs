@@ -30,10 +30,10 @@ namespace DataAccess
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserEntity>(ConfigureUserEntity);
+            modelBuilder.Entity<User>(ConfigureUserEntity);
         }
 
-        private void ConfigureUserEntity(EntityTypeBuilder<UserEntity> entity)
+        private void ConfigureUserEntity(EntityTypeBuilder<User> entity)
         {
             entity.ToTable("User", Schema);
             entity.HasKey(e => e.Id);
