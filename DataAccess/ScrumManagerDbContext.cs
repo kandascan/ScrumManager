@@ -28,5 +28,17 @@ namespace DataAccess
             var connectionString = @"Data Source=DESKTOP-BVKHG2F;Initial Catalog=ScrumManager;Integrated Security=True";
             builder.UseSqlServer(connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserEntity>(ConfigureUserEntity);
+        }
+
+        private void ConfigureUserEntity(EntityTypeBuilder<UserEntity> entity)
+        {
+            entity.ToTable("User", Schema);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Password).IsRequired().HasMaxLength(50);
+        }
     }
 }
