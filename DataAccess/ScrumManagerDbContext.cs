@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess
 {
@@ -35,10 +36,12 @@ namespace DataAccess
 
         private void ConfigureUserEntity(EntityTypeBuilder<User> entity)
         {
-            entity.ToTable("User", Schema);
+            entity.ToTable("User");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Password).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Active).IsRequired().HasDefaultValue(1);
         }
     }
 }

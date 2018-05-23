@@ -13,29 +13,58 @@ namespace WebDomain.Controllers
     public class HomeController : Controller
     {
         private UnitOfWork uow = null;
+        private IRepository<User> repository;
 
         public HomeController()
         {
             uow = new UnitOfWork();
         }
+
+        [HttpGet]
         public IActionResult Index()
         {
             var test = uow.Repository<User>().GetDetails(x => x.Id == 1);
             return View();
         }
 
-        public IActionResult About()
+        [HttpGet]
+        public IActionResult AddUser()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
-        public IActionResult Contact()
+        [HttpPost]
+        public IActionResult AddUser(User user)
         {
-            ViewData["Message"] = "Your contact page.";
+            if(!ModelState.IsValid)
+                throw new Exception("Model invalid");
+
+            uow.Repository<User>().Add(user);
+            uow.SaveChanges();
+
+            return Redirect("Login");
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(User user)
+        {
+            if (!ModelState.IsValid)
+                throw new Exception("Model invalid");
+
+            var userdb = uow.Repository<User>().GetDetails(u => u.Username == user.Username && u.Password == user.Password);
+            if (userdb != null && userdb.Active == true)
+            {
+                return Redirect("Home/Index");
+            }
 
             return View();
+
         }
 
         public IActionResult Error()

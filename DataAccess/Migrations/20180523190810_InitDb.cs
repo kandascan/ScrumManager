@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace DataAccess.Migrations
 {
-    public partial class InitDatabase : Migration
+    public partial class InitDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,9 +15,10 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Active = table.Column<bool>(nullable: false),
-                    Password = table.Column<string>(nullable: true),
-                    Username = table.Column<string>(nullable: true)
+                    Active = table.Column<bool>(nullable: false, defaultValue: true),
+                    CreatedDate = table.Column<DateTime>(nullable: true, defaultValueSql: "GETDATE()"),
+                    Password = table.Column<string>(maxLength: 50, nullable: false),
+                    Username = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {

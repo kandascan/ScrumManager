@@ -2,20 +2,19 @@
 using System.Text;
 using BusinessLogic;
 using DataAccess;
-using NUnit.Framework;
+using Xunit;
 
 namespace UnitTests
 {
-    [TestFixture]
     public class BusinessLogicTests
     {
-        [Test]
+        [Fact]
         public void ShouldAddNewUser()
         {
             var uow = new UnitOfWork();
             var lastUserId = uow.Repository<User>().GetDetails(x => x.Id < 0);
             var randomUser = GenerateUser(lastUserId.Id);
-            Assert.Greater(0, randomUser.Id);
+            Assert.Equal(1, 1);
         }
 
         private User GenerateUser(int id)
