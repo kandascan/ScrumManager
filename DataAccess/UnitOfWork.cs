@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IDisposable, IUnitOfWork
     {
         private ScrumManagerDbContext db = null;
 
@@ -27,7 +27,7 @@ namespace BusinessLogic
             return repo;
         }
 
-        public void SaveChanges()
+        public void Save()
         {
             db.SaveChanges();
         }

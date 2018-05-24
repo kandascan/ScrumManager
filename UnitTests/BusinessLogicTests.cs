@@ -12,12 +12,12 @@ namespace UnitTests
         public void ShouldAddNewUser()
         {
             var uow = new UnitOfWork();
-            var lastUserId = uow.Repository<User>().GetDetails(x => x.Id < 0);
-            var randomUser = GenerateUser(lastUserId.Id);
+            var lastUserId = uow.Repository<UserEntity>().GetDetails(x => x.UserId < 0);
+            var randomUser = GenerateUser(lastUserId.UserId);
             Assert.Equal(1, 1);
         }
 
-        private User GenerateUser(int id)
+        private UserEntity GenerateUser(int id)
         {
             var rand = new Random();
             int count = rand.Next(8, 20);
@@ -29,9 +29,9 @@ namespace UnitTests
                 str.Append(Encoding.ASCII.GetString(new[] {b}));
             }
 
-            return new User
+            return new UserEntity
             {
-                Id = id,
+                UserId = id,
                 Active = true,
                 Password = "TestPass",
                 Username = str.ToString()

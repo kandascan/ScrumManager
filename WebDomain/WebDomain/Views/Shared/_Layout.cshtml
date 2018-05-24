@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -26,13 +27,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">WebDomain</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Scrum Manager</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="AddUser">Register</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Login">Login</a></li>
+                    @if (Context.Session.GetString("UserId") != null)
+                    {
+                        <li><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Home" asp-action="CreateUser">Register</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Login">Login</a></li>
+                    }
                 </ul>
             </div>
         </div>

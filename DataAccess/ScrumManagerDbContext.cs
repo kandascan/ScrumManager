@@ -22,7 +22,7 @@ namespace DataAccess
         public ScrumManagerDbContext(DbContextOptions<ScrumManagerDbContext> options)
             : base(options){}
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -31,15 +31,18 @@ namespace DataAccess
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(ConfigureUserEntity);
+            modelBuilder.Entity<UserEntity>(ConfigureUserEntity);
         }
 
-        private void ConfigureUserEntity(EntityTypeBuilder<User> entity)
+        private void ConfigureUserEntity(EntityTypeBuilder<UserEntity> entity)
         {
             entity.ToTable("User");
-            entity.HasKey(e => e.Id);
+            entity.HasKey(e => e.UserId);
             entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Password).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Password).IsRequired();
+            entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
             entity.Property(e => e.Active).IsRequired().HasDefaultValue(1);
         }

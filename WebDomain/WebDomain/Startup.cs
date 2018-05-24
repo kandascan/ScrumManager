@@ -25,10 +25,14 @@ namespace WebDomain
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
             var connectionString = @"Data Source=DESKTOP-BVKHG2F;Initial Catalog=ScrumManager;Integrated Security=True";
             services.AddDbContext<ScrumManagerDbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped(p => new ScrumManagerDbContext(p.GetService<DbContextOptions<ScrumManagerDbContext>>()));
-            services.AddSingleton<IRepository<User>, Repository<User>>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IServiceManager, ServiceManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +49,7 @@ namespace WebDomain
             }
 
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

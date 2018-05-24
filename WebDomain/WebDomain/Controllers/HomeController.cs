@@ -4,7 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic;
+using BusinessLogic.Models;
+using BusinessLogic.Requests;
 using DataAccess;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebDomain.Models;
 
@@ -12,37 +15,58 @@ namespace WebDomain.Controllers
 {
     public class HomeController : Controller
     {
-        private UnitOfWork uow = null;
-        private IRepository<User> repository;
+        private IServiceManager service;
 
-        public HomeController()
+        public HomeController(IServiceManager service)
         {
-            uow = new UnitOfWork();
+            this.service = service;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var test = uow.Repository<User>().GetDetails(x => x.Id == 1);
-            return View();
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                return View();
+            }
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
-        public IActionResult AddUser()
+        public IActionResult CreateUser()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddUser(User user)
+        public IActionResult CreateUser(UserAccount newUserAccountuser)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 throw new Exception("Model invalid");
 
-            uow.Repository<User>().Add(user);
-            uow.SaveChanges();
+            var request = new CreateUserRequest
+            {
+                User = new User
+                {
+                    FirstName = newUserAccountuser.FirstName,
+                    Email = newUserAccountuser.Email,
+                    LastName = newUserAccountuser.LastName,
+                    Password = newUserAccountuser.Password,
+                    UserName = newUserAccountuser.UserName
+                }
+            };
 
-            return Redirect("Login");
+            var response = service.CreatUser(request);
+
+            if (response.Success)
+            {
+                return RedirectToAction("Login");
+            }
+
+            ViewBag.Error = response.ErrorMessage;
+
+            return View();
         }
 
         [HttpGet]
@@ -52,19 +76,44 @@ namespace WebDomain.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(User user)
+        public IActionResult Login(UserAccount userAccount)
         {
-            if (!ModelState.IsValid)
-                throw new Exception("Model invalid");
-
-            var userdb = uow.Repository<User>().GetDetails(u => u.Username == user.Username && u.Password == user.Password);
-            if (userdb != null && userdb.Active == true)
+            if (string.IsNullOrEmpty(userAccount.UserName))
             {
-                return Redirect("Home/Index");
+                ModelState.AddModelError("", "Please provide user name");
             }
 
-            return View();
+            if (string.IsNullOrEmpty(userAccount.Password))
+            {
+                ModelState.AddModelError("", "Please provide password for user");
+            }
 
+            var request = new GetUserRequest
+            {
+                User = new User
+                {
+                    UserName = userAccount.UserName,
+                    Password = userAccount.Password
+                }
+            };
+
+            var response = service.GetUser(request);
+            if (response.Success)
+            {
+                HttpContext.Session.SetString("UserId", response.UserId.ToString());
+                HttpContext.Session.SetString("UserName", response.User.UserName);
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError("", response.ErrorMessage);
+
+            return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
 
         public IActionResult Error()

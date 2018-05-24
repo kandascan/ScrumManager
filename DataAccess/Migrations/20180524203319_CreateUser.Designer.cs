@@ -11,8 +11,8 @@ using System;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ScrumManagerDbContext))]
-    [Migration("20180523190810_InitDb")]
-    partial class InitDb
+    [Migration("20180524203319_CreateUser")]
+    partial class CreateUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,9 +21,9 @@ namespace DataAccess.Migrations
                 .HasAnnotation("ProductVersion", "2.0.3-rtm-10026")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("DataAccess.User", b =>
+            modelBuilder.Entity("DataAccess.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Active")
@@ -34,15 +34,26 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Password")
+                        .IsRequired();
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("User");
                 });
