@@ -20,9 +20,11 @@ namespace DataAccess
     public class ScrumManagerDbContext : DbContext
     {
         public ScrumManagerDbContext(DbContextOptions<ScrumManagerDbContext> options)
-            : base(options){}
+            : base(options) { }
 
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<TeamEntity> Teams { get; set; }
+        public DbSet<XrefUserTeamEntity> XregUserTeam { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -32,6 +34,30 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserEntity>(ConfigureUserEntity);
+            modelBuilder.Entity<TeamEntity>(ConfigureTeamEntity);
+            modelBuilder.Entity<XrefUserTeamEntity>(ConfigureXrefUserTeamEntity);
+        }
+
+        private void ConfigureXrefUserTeamEntity(EntityTypeBuilder<XrefUserTeamEntity> entity)
+        {
+            entity.ToTable("XrefUserTeam");
+            entity.HasKey(e => e.Id);
+            entity.HasOne(p => p.Team)
+                .WithMany(b => b.XrefUsersTeam)
+                .HasForeignKey(p => p.TeamId);
+            entity.HasOne(p => p.User)
+                .WithMany(b => b.XrefUsersTeam)
+                .HasForeignKey(p => p.UserId);
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
+        }
+
+        private void ConfigureTeamEntity(EntityTypeBuilder<TeamEntity> entity)
+        {
+            entity.ToTable("Team");
+            entity.HasKey(e => e.TeamId);
+            entity.HasIndex(p => p.TeamName).IsUnique();
+            entity.Property(e => e.TeamName).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
         }
 
         private void ConfigureUserEntity(EntityTypeBuilder<UserEntity> entity)

@@ -9,6 +9,7 @@ using BusinessLogic.Requests;
 using DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using WebDomain.Models;
 
 namespace WebDomain.Controllers
@@ -34,13 +35,65 @@ namespace WebDomain.Controllers
         }
 
         [HttpGet]
+        public IActionResult UserDashboard()
+        {
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                return View();
+            }
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult CreateTeam()
+        {
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                return View();
+            }
+            return RedirectToAction("Login");
+        }
+
+        [HttpPost]
+        public IActionResult CreateTeam(TeamVM newTeam)
+        {
+            if (!ModelState.IsValid)
+                throw new Exception("Model invalid");
+            int userId = 0;
+            if(Int32.TryParse(HttpContext.Session.GetString("UserId"), out userId))
+            {
+                var request = new CreateTeamRequest
+                {
+                    Team = new Team
+                    {
+                        TeamName = newTeam.TeamName
+
+                    },
+                    UserId = userId
+                };
+                var response = service.CreateTeam(request);
+
+                if (response.Success)
+                {
+                    return RedirectToAction("UserDashboard");
+                }
+
+                ViewBag.Error = response.ErrorMessage;
+            }
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult CreateUser()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateUser(UserAccount newUserAccountuser)
+        public IActionResult CreateUser(UserVm newUserAccountuser)
         {
             if (!ModelState.IsValid)
                 throw new Exception("Model invalid");
@@ -76,7 +129,7 @@ namespace WebDomain.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(UserAccount userAccount)
+        public IActionResult Login(UserVm userAccount)
         {
             if (string.IsNullOrEmpty(userAccount.UserName))
             {
@@ -102,7 +155,7 @@ namespace WebDomain.Controllers
             {
                 HttpContext.Session.SetString("UserId", response.UserId.ToString());
                 HttpContext.Session.SetString("UserName", response.User.UserName);
-                return RedirectToAction("Index");
+                return RedirectToAction("UserDashboard");
             }
 
             ModelState.AddModelError("", response.ErrorMessage);

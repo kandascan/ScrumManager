@@ -11,5 +11,7 @@ namespace BusinessLogic
     {
         CreateUserResponse CreatUser(CreateUserRequest request);
         GetUserResponse GetUser(GetUserRequest request);
+        CreateTeamResponse CreateTeam(CreateTeamRequest request);
+        GetUserTeamsResponse GetUserTeams(GetUserTeamsRequest request);
     }
 }

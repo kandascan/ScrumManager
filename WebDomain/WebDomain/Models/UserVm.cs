@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebDomain.Models
 {
-    public class UserAccount
+    public class UserVm
     {
         public int UserId { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using BusinessLogic.Models;
@@ -17,6 +18,43 @@ namespace BusinessLogic
         {
             this.uow = new UnitOfWork();
         }
+
+        public CreateTeamResponse CreateTeam(CreateTeamRequest request)
+        {
+            var response = new CreateTeamResponse();
+
+            var dbTeam = new TeamEntity
+            {
+                TeamName = request.Team.TeamName,
+                ProjectManagerId = request.UserId
+            };
+
+            try
+            {
+                uow.Repository<TeamEntity>().Add(dbTeam);
+                uow.Save();
+
+                var dbXrefUserTeam = new XrefUserTeamEntity
+                {
+                    TeamId = dbTeam.TeamId,
+                    UserId = request.UserId
+                };
+                uow.Repository<XrefUserTeamEntity>().Add(dbXrefUserTeam);
+                uow.Save();
+
+                response.Success = true;
+                response.TeamId = dbTeam.TeamId;
+                response.UserId = request.UserId;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.Success = false;
+            }
+
+            return response;
+        }
+
         public CreateUserResponse CreatUser(CreateUserRequest request)
         {
             string encryptedPassword = HashPassword(request.User.Password);
@@ -37,6 +75,41 @@ namespace BusinessLogic
                 uow.Save();
                 response.Success = true;
                 response.UserId = dbUser.UserId;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.Success = false;
+            }
+
+            return response;
+        }
+
+        public GetUserTeamsResponse GetUserTeams(GetUserTeamsRequest request)
+        {
+            var response = new GetUserTeamsResponse();
+
+            try
+            {
+                //var dbUsers = uow.Repository<UserEntity>().GetOverview();
+                var dbTeams = uow.Repository<TeamEntity>().GetOverview();
+                var dbXrefUsersTeam = uow.Repository<XrefUserTeamEntity>().GetOverview();
+
+                var userTeams = (from xref in dbXrefUsersTeam
+                                     //join user in dbUsers
+                                     //  on xref.UserId equals user.UserId
+                                 join team in dbTeams
+                                     on xref.TeamId equals team.TeamId
+                                 where xref.UserId == request.UserId
+                                 select new Team
+                                 {
+                                     TeamId = team.TeamId,
+                                     TeamName = team.TeamName,
+                                     ProjectManagerId = team.ProjectManagerId
+                                 }
+                    ).ToList();
+
+                response.Success = true;
             }
             catch (Exception ex)
             {
@@ -93,7 +166,7 @@ namespace BusinessLogic
 
             using (SHA512 shaM = new SHA512Managed())
             {
-               hash = shaM.ComputeHash(data);
+                hash = shaM.ComputeHash(data);
             }
 
             StringBuilder stringBuilder = new StringBuilder(128);

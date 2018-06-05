@@ -1,0 +1,50 @@
+﻿@model WebDomain.Models.TeamVM
+
+@{
+    ViewData["Title"] = "CreateTeam";
+}
+
+<h2>CreateTeam</h2>
+
+<h4>Team</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateTeam">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+                <label asp-for="TeamId" class="control-label"></label>
+                <input asp-for="TeamId" class="form-control" />
+                <span asp-validation-for="TeamId" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label asp-for="TeamName" class="control-label"></label>
+                <input asp-for="TeamName" class="form-control" />
+                <span asp-validation-for="TeamName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScrumMaster" class="control-label"></label>
+                <input asp-for="ScrumMaster" class="form-control" />
+                <span asp-validation-for="ScrumMaster" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductManager" class="control-label"></label>
+                <input asp-for="ProductManager" class="form-control" />
+                <span asp-validation-for="ProductManager" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductOwner" class="control-label"></label>
+                <input asp-for="ProductOwner" class="form-control" />
+                <span asp-validation-for="ProductOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create new team" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
