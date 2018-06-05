@@ -38,6 +38,8 @@ namespace DataAccess
         {
             entity.ToTable("User");
             entity.HasKey(e => e.UserId);
+            entity.HasIndex(p => p.Username).IsUnique();
+            entity.HasIndex(p => p.Email).IsUnique();
             entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Password).IsRequired();
             entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
