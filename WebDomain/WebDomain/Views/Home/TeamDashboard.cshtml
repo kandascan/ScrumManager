@@ -1,0 +1,30 @@
+﻿@model WebDomain.Models.TeamVM
+@{
+    ViewData["Title"] = "TeamDashboard";
+}
+
+<h2>TeamDashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>User details later</h2>
+    </div>
+    <div class="col-lg-8">
+        <h3>Team members</h3>
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                @foreach (var member in Model.TeamMembers)
+                {
+                    <li class="list-group-item">@member.UserName - @member.UserRole</li>
+                }
+            </ul>
+        </div>
+
+        
+    </div>
+</div>
+here backlog, active sprint etc
+
+<div>
+    <a asp-action="UserDashboard">Back to List</a>
+</div>

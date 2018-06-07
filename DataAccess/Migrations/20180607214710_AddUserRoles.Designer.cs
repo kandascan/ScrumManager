@@ -11,9 +11,10 @@ using System;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ScrumManagerDbContext))]
-    partial class ScrumManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180607214710_AddUserRoles")]
+    partial class AddUserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,17 +26,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<DateTime?>("CreatedDate");
 
                     b.Property<string>("RoleName");
 
                     b.HasKey("RoleId");
-
-                    b.HasIndex("RoleName")
-                        .IsUnique()
-                        .HasFilter("[RoleName] IS NOT NULL");
 
                     b.ToTable("Role");
                 });

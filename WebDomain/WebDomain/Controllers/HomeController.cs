@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using BusinessLogic;
 using BusinessLogic.Models;
 using BusinessLogic.Requests;
+using BusinessLogic.Responses;
 using DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
+using WebDomain.Common;
 using WebDomain.Models;
 
 namespace WebDomain.Controllers
@@ -35,12 +37,66 @@ namespace WebDomain.Controllers
         }
 
         [HttpGet]
-        public IActionResult UserDashboard()
+        public IActionResult TeamDashboard(int teamId)
         {
             if (HttpContext.Session.GetString("UserId") != null)
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                return View();
+
+                var request = new GetTeamByIdRequest{ TeamId = teamId};
+                var response = service.GetTeamById(request);
+                var team = new TeamVM
+                {
+                    TeamId = teamId,
+                    TeamName = response.Team.TeamName
+                };
+
+                var teamMembers = new List<TeamMemberVm>();
+                foreach (var member in response.Members)
+                {
+                    teamMembers.Add(new TeamMemberVm
+                    {
+                        UserId = member.UserId,
+                        UserName = member.UserName,
+                        UserRole = member.UserRole
+                    });
+                }
+
+                team.TeamMembers = teamMembers;
+
+                return View(team);
+            }
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult UserDashboard()
+        {
+
+            if (HttpContext.Session.GetString("UserId") != null)
+            {
+                int userId = Int32.Parse(HttpContext.Session.GetString("UserId"));
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                ViewBag.UserId = userId;
+                var request = new GetUserTeamsRequest { UserId = userId };
+                var response = service.GetUserTeams(request);
+                if (response.Success)
+                {
+                    var teams = new List<TeamVM>();
+                    foreach (var team in response.Teams)
+                    {
+                        teams.Add(new TeamVM
+                        {
+                            TeamId = team.TeamId,
+                            TeamName = team.TeamName,
+                            ProjectManagerId = team.ProjectManagerId,
+                            ProductOwnerId = team.ProductOwnerId,
+                            ScrumMasterId = team.ScrumMasterId
+                        });
+                    }
+                   
+                    return View(teams);
+                }
             }
             return RedirectToAction("Login");
         }
@@ -62,7 +118,7 @@ namespace WebDomain.Controllers
             if (!ModelState.IsValid)
                 throw new Exception("Model invalid");
             int userId = 0;
-            if(Int32.TryParse(HttpContext.Session.GetString("UserId"), out userId))
+            if (Int32.TryParse(HttpContext.Session.GetString("UserId"), out userId))
             {
                 var request = new CreateTeamRequest
                 {

@@ -8,5 +8,6 @@ namespace BusinessLogic.Requests
     public class BaseRequest
     {
         public int UserId { get; set; }
+        public int TeamId { get; set; }
     }
 }

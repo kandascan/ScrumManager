@@ -11,9 +11,10 @@ using System;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ScrumManagerDbContext))]
-    partial class ScrumManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180607220751_PopulateUserRoles")]
+    partial class PopulateUserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

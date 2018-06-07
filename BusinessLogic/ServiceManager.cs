@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using BusinessLogic.Models;
@@ -108,7 +109,7 @@ namespace BusinessLogic
                                      ProjectManagerId = team.ProjectManagerId
                                  }
                     ).ToList();
-
+                response.Teams = userTeams;
                 response.Success = true;
             }
             catch (Exception ex)
@@ -177,6 +178,36 @@ namespace BusinessLogic
             }
 
             return stringBuilder.ToString();
+        }
+
+        public GetTeamByIdResponse GetTeamById(GetTeamByIdRequest request)
+        {
+            var response = new GetTeamByIdResponse();
+            var teamDetails = uow.Repository<TeamEntity>().GetDetails(x => x.TeamId == request.TeamId);
+            response.Team = new Team
+            {
+                TeamName = teamDetails.TeamName,
+                TeamId = teamDetails.TeamId
+            };
+            var dbUsers = uow.Repository<UserEntity>().GetOverview();
+            var dbTeams = uow.Repository<TeamEntity>().GetOverview();
+            var dbXrefUsersTeam = uow.Repository<XrefUserTeamEntity>().GetOverview();
+            var dbRoles = uow.Repository<RolesEntity>().GetOverview();
+
+            var result = (from team in dbTeams
+                    join xref in dbXrefUsersTeam on team.TeamId equals xref.TeamId
+                    join user in dbUsers on xref.UserId equals user.UserId
+                    join role in dbRoles on user.RoleId equals role.RoleId
+                    where team.TeamId == request.TeamId
+                    select new Member
+                    {
+                        UserId = user.UserId,
+                        UserName = user.Username,
+                        UserRole = role.RoleName
+                    }
+                );
+            response.Members = result;
+            return response;
         }
     }
 }

@@ -25,6 +25,7 @@ namespace DataAccess
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<TeamEntity> Teams { get; set; }
         public DbSet<XrefUserTeamEntity> XregUserTeam { get; set; }
+        public DbSet<RolesEntity> Roles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -36,6 +37,15 @@ namespace DataAccess
             modelBuilder.Entity<UserEntity>(ConfigureUserEntity);
             modelBuilder.Entity<TeamEntity>(ConfigureTeamEntity);
             modelBuilder.Entity<XrefUserTeamEntity>(ConfigureXrefUserTeamEntity);
+            modelBuilder.Entity<RolesEntity>(ConfigureRoleEntity);
+        }
+
+        private void ConfigureRoleEntity(EntityTypeBuilder<RolesEntity> entity)
+        {
+            entity.ToTable("Role");
+            entity.HasKey(e => e.RoleId);
+            entity.HasIndex(e => e.RoleName).IsUnique();
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
         }
 
         private void ConfigureXrefUserTeamEntity(EntityTypeBuilder<XrefUserTeamEntity> entity)
@@ -73,6 +83,9 @@ namespace DataAccess
             entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("GETDATE()");
             entity.Property(e => e.Active).IsRequired().HasDefaultValue(1);
+            entity.HasOne(p => p.Role)
+                .WithMany(b => b.Users)
+                .HasForeignKey(p => p.RoleId);
         }
     }
 }

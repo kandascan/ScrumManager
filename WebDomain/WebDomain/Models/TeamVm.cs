@@ -12,9 +12,12 @@ namespace WebDomain.Models
 
         [Required(ErrorMessage = "Team name is required.")]
         public string TeamName { get; set; }
+        public int? ScrumMasterId { get; set; }
+        public int? ProjectManagerId { get; set; }
+        public int? ProductOwnerId { get; set; }
         public string ScrumMaster { get; set; }
-        public string ProductManager { get; set; }
+        public string ProjectManager { get; set; }
         public string ProductOwner { get; set; }
-        public IEnumerable<UserVm> TeamMembers { get; set; }
+        public IEnumerable<TeamMemberVm> TeamMembers { get; set; }
     }
 }
