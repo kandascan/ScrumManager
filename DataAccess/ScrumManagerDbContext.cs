@@ -26,6 +26,7 @@ namespace DataAccess
         public DbSet<TeamEntity> Teams { get; set; }
         public DbSet<XrefUserTeamEntity> XregUserTeam { get; set; }
         public DbSet<RolesEntity> Roles { get; set; }
+        public DbSet<LondonCrimeEntity> LondonCrime { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -38,6 +39,13 @@ namespace DataAccess
             modelBuilder.Entity<TeamEntity>(ConfigureTeamEntity);
             modelBuilder.Entity<XrefUserTeamEntity>(ConfigureXrefUserTeamEntity);
             modelBuilder.Entity<RolesEntity>(ConfigureRoleEntity);
+            modelBuilder.Entity<LondonCrimeEntity>(ConfigureLondonCrimeEntity);
+        }
+
+        private void ConfigureLondonCrimeEntity(EntityTypeBuilder<LondonCrimeEntity> entity)
+        {
+            entity.ToTable("london_crime_by_lsoa");
+            entity.HasKey(e => e.Id);
         }
 
         private void ConfigureRoleEntity(EntityTypeBuilder<RolesEntity> entity)

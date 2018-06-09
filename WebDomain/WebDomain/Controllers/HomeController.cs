@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessLogic;
@@ -26,6 +27,55 @@ namespace WebDomain.Controllers
         }
 
         [HttpGet]
+        public IActionResult LondonCrime()
+        {
+            using (var reader = new StreamReader(@"C:\data\london_crime_by_lsoa.csv"))
+            {
+                long count = 0;
+                long defect = 0;
+                List<LondonCrimeEntity> londonCrimeEntity = new List<LondonCrimeEntity>();
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (count == 0)
+                    {
+                        count++;
+                        continue;
+                    }
+                    else
+                    {
+                        if (line != null)
+                        {
+                            var values = line.Split(',');
+                            if(values.Length != 7) continue;
+                         
+                                londonCrimeEntity.Add(new LondonCrimeEntity
+                                {
+                                    borough = values[0],
+                                    lsoa_code = values[1],
+                                    major_category = values[2],
+                                    minor_category = values[3],
+                                    value = values[4],
+                                    year = values[5],
+                                    month = values[6]
+                                });
+
+                            if (londonCrimeEntity.Count == 100000)
+                            {
+                                var result = service.CreateCsv(londonCrimeEntity);
+
+                                londonCrimeEntity.Clear();
+                            }
+                        }
+                    }
+                    count++;
+                }
+            }
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserId") != null)
@@ -43,7 +93,7 @@ namespace WebDomain.Controllers
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-                var request = new GetTeamByIdRequest{ TeamId = teamId};
+                var request = new GetTeamByIdRequest { TeamId = teamId };
                 var response = service.GetTeamById(request);
                 var team = new TeamVM
                 {
@@ -94,7 +144,7 @@ namespace WebDomain.Controllers
                             ScrumMasterId = team.ScrumMasterId
                         });
                     }
-                   
+
                     return View(teams);
                 }
             }

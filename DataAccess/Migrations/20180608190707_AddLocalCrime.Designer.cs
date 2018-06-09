@@ -11,9 +11,10 @@ using System;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ScrumManagerDbContext))]
-    partial class ScrumManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180608190707_AddLocalCrime")]
+    partial class AddLocalCrime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,11 +34,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("minor_category");
 
-                    b.Property<string>("month");
+                    b.Property<int>("month");
 
-                    b.Property<string>("value");
+                    b.Property<int>("value");
 
-                    b.Property<string>("year");
+                    b.Property<int>("year");
 
                     b.HasKey("Id");
 

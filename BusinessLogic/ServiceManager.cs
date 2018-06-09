@@ -209,5 +209,23 @@ namespace BusinessLogic
             response.Members = result;
             return response;
         }
+
+        public bool CreateCsv(IEnumerable<LondonCrimeEntity> request)
+        {
+            try
+            {
+                
+                    uow.Repository<LondonCrimeEntity>().AddMany(request);
+
+                
+
+                uow.Save();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
