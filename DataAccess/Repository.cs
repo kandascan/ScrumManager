@@ -39,5 +39,10 @@ namespace BusinessLogic
         {
             _objectSet.Remove(entity);
         }
+
+        public void AddMany(IEnumerable<T> entities)
+        {
+            _objectSet.AddRange(entities);
+        }
     }
 }
