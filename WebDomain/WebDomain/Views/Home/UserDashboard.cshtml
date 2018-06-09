@@ -19,11 +19,11 @@
                 {
                     if (@ViewBag.UserId == team.ProjectManagerId)
                     {
-                        <li class="list-group-item active"><a class="card-link" asp-action="TeamDashboard" asp-route-teamId="@team.TeamId">@team.TeamName</a></li>
+                        <a class="list-group-item active" asp-action="TeamDashboard" asp-route-teamId="@team.TeamId">@team.TeamName</a>
                     }
                     else
                     {
-                        <li class="list-group-item"><a class="card-link" asp-action="TeamDashboard" asp-route-teamId="@team.TeamId">@team.TeamName</a></li>
+                        <a class="list-group-item" asp-action="TeamDashboard" asp-route-teamId="@team.TeamId">@team.TeamName</a>
                     }
                 }
             </ul>

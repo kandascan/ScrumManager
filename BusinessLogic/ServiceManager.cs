@@ -20,7 +20,7 @@ namespace BusinessLogic
             this.uow = new UnitOfWork();
         }
 
-        public CreateTeamResponse CreateTeam(CreateTeamRequest request)
+        public CreateTeamResponse CreateTeam(CreateTeamRequest request)//TODO: fix bug with assigned user role
         {
             var response = new CreateTeamResponse();
 
